@@ -25,6 +25,7 @@ To run this project, clone the repository and install the dependencies:
 git clone https://github.com/ftmdeveloperz/FTM_OTT_GENIE.git
 cd FTM_OTT_GENIE
 pip install -r requirements.txt
+```
 
 Running the Bot
 
