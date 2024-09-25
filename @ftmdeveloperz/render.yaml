@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: telegram-video-downloader
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python ftm.py"
-    envVars:
-      - key: TELEGRAM_BOT_API_TOKEN
-        fromDatabase: your_database_name # Optional: if you are using a database
