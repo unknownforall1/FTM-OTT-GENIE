@@ -1,0 +1,23 @@
+# Python template
+*.py[cod]
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+
+# Environment variables
+.env
+
+# Deployment files (optional)
+Procfile
+render.yaml
+*.log
+
+# Byte-compiled / optimized / DLL files
+*.py[cod]
