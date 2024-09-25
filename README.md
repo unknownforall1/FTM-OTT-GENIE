@@ -33,12 +33,14 @@ pip install -r requirements.txt
 
 #### On Linux/Mac:
 
+```bash
 export TELEGRAM_BOT_API_TOKEN='your_bot_token'
-
+```
 #### On Windows:
 
+```bash
 set TELEGRAM_BOT_API_TOKEN='your_bot_token'
-
+```
 
 2. Run the bot:
 ```bash
