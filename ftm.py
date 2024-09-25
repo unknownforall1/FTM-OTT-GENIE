@@ -1,15 +1,15 @@
 import os
 from telegram import Update
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import yt_dlp
 
 # Replace with your channel username
 CHANNEL_USERNAME = '@ftmmovieskiduniya'
 
 # Function to check if the user is a member of the specified channel
-def is_user_member(update: Update) -> bool:
+async def is_user_member(update: Update) -> bool:
     user_id = update.message.from_user.id
-    chat_member = update.bot.get_chat_member(CHANNEL_USERNAME, user_id)
+    chat_member = await update.bot.get_chat_member(CHANNEL_USERNAME, user_id)
     return chat_member.status in ['member', 'administrator', 'creator']
 
 # Function to show progress
@@ -66,19 +66,19 @@ def download_video(url, download_path='downloads/'):
         return None, 0, 0  # Return None and zeros if there's an error
 
 # Start command
-def start(update: Update):
-    if not is_user_member(update):
-        update.message.reply_text(
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not await is_user_member(update):
+        await update.message.reply_text(
             f"Please join our channel {CHANNEL_USERNAME} to use this bot."
         )
         return
 
-    update.message.reply_text("Send me a link to a free video from JioCinema, Hotstar, SonyLIV, or Zee5, and I'll download it for you!")
+    await update.message.reply_text("Send me a link to a free video from JioCinema, Hotstar, SonyLIV, or Zee5, and I'll download it for you!")
 
 # Download video command
-def download(update: Update):
-    if not is_user_member(update):
-        update.message.reply_text(
+async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not await is_user_member(update):
+        await update.message.reply_text(
             f"Please join our channel {CHANNEL_USERNAME} to use this bot."
         )
         return
@@ -89,45 +89,42 @@ def download(update: Update):
 
         # Check if the URL is valid for supported platforms
         if any(platform in url for platform in ["jiocinema", "hotstar", "sonyliv", "zee5"]):
-            update.message.reply_text('Downloading your free video, please wait...')
+            await update.message.reply_text('Downloading your free video, please wait...')
 
             # Download the video
             video_path, video_duration, file_size = download_video(url)
             if video_path:
                 try:
                     # Send the downloaded video back to the user
-                    update.message.reply_document(document=open(video_path, 'rb'))
-                    update.message.reply_text(
+                    await update.message.reply_document(document=open(video_path, 'rb'))
+                    await update.message.reply_text(
                         f'Here is your free video!\n\n'
                         f'📏 **Duration**: {video_duration // 60}m {video_duration % 60}s\n'
                         f'💾 **File Size**: {file_size / (1024 * 1024):.2f} MB',
                     )
                 except Exception as e:
-                    update.message.reply_text(f"Failed to send the video: {str(e)}")
+                    await update.message.reply_text(f"Failed to send the video: {str(e)}")
             else:
-                update.message.reply_text("Error: Failed to download the video. Please try again.")
+                await update.message.reply_text("Error: Failed to download the video. Please try again.")
         else:
-            update.message.reply_text('Unsupported platform or invalid URL! Please provide a valid link from JioCinema, Hotstar, SonyLIV, or Zee5.')
+            await update.message.reply_text('Unsupported platform or invalid URL! Please provide a valid link from JioCinema, Hotstar, SonyLIV, or Zee5.')
     else:
-        update.message.reply_text('Please provide a valid video link!')
+        await update.message.reply_text('Please provide a valid video link!')
 
-def main():
+async def main():
     # Get the bot token from the environment variables
-    TOKEN = os.getenv('TELEGRAM_BOT_API_TOKEN')
+    TOKEN = os.getenv('7401708143:AAGG3RTL54BxSZogp_hof94xe2Dx57_wZqw')
 
     # Initialize the bot
-    updater = Updater(TOKEN)
-    dp = updater.dispatcher
+    application = ApplicationBuilder().token(TOKEN).build()
 
     # Register the command handlers
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("download", download))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("download", download))
 
     # Start the bot
-    updater.start_polling()
-    updater.idle()
+    await application.run_polling()
 
 if __name__ == '__main__':
     import asyncio
     asyncio.run(main())
-
