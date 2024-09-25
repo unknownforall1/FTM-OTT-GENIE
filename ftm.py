@@ -1,6 +1,5 @@
 import os
-from telegram import Update, ParseMode
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram import Update
 import yt_dlp
 
 # Replace with your channel username
