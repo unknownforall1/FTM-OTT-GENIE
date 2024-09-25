@@ -15,7 +15,7 @@ python-dotenv
 
 # File Size and Video Metadata
 hachoir
-
+python-telegram-bot>=20.0
 # Handling Media Information
 pymediainfo
 
