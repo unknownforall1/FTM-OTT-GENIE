@@ -12,11 +12,34 @@ def is_user_member(update: Update) -> bool:
     chat_member = update.bot.get_chat_member(CHANNEL_USERNAME, user_id)
     return chat_member.status in ['member', 'administrator', 'creator']
 
+# Function to show progress
+def progress_hook(d):
+    if d['status'] == 'finished':
+        print(f"\nDone downloading video: {d['filename']}")
+    elif d['status'] == 'downloading':
+        percent = d['downloaded_bytes'] / d['total_bytes'] * 100
+        speed = d['speed']
+        eta = d['eta']
+        total_size = d['total_bytes']
+        downloaded_bytes = d['downloaded_bytes']
+        print(PROGRESS_BAR.format(percent=int(percent), downloaded_bytes=downloaded_bytes, total_size=total_size, speed=speed, eta=eta))
+
+# Progress bar template
+PROGRESS_BAR = (
+    "╭━━━━❰ TEAM FTM DOWNLOADING..... ❱━➣\n"
+    "┣⪼ 🗂️ : {downloaded_bytes} | {total_size} ( file size downloaded )\n"
+    "┣⪼ ⏳️ : {percent}% ( percentage downloaded )\n"
+    "┣⪼ 🚀 : {speed}/s  ( download speed )\n"
+    "┣⪼ ⏱️ : {eta} ETA (estimated time)\n"
+    "╰━━━━━━━━━━━━━━━➣"
+)
+
 # Function to download free video using yt-dlp and customize filename
 def download_video(url, download_path='downloads/'):
     ydl_opts = {
         'outtmpl': f'{download_path}%(title)s.%(ext)s',  # Save with the original title
-        'noplaylist': True  # Ensure we're only downloading a single video
+        'noplaylist': True,  # Ensure we're only downloading a single video
+        'progress_hooks': [progress_hook]  # Set the progress hook
     }
 
     try:
@@ -27,7 +50,7 @@ def download_video(url, download_path='downloads/'):
             file_size = info_dict.get('filesize', 0) or info_dict.get('filesize_approx', 0)  # Get file size
 
         # Customize the filename
-        custom_filename = f"@ftmdeveloperz {video_title} 📥 Uᴘʟᴏᴀᴅᴇᴅ Bʏ @FTMMOVIESKIDUNIYA 🚀\n" \
+        custom_filename = f"@ftmdeveloperz {video_title} 📥 Uᴘʟᴏᴀᴅᴇᴅ Bʏ @ftmmovieskiduniya 🚀\n" \
                           "🔧 Rɪᴘᴘᴇᴅ Bʏ @FTMDEVELOPER 💾\n" \
                           "⚠️ Dɪsᴄʟᴀɪᴍᴇʀ: Tʜɪs ғɪʟᴇ ᴡɪʟʟ ʙᴇ ᴅᴇʟᴇᴛᴇᴅ ɪɴ 𝟷𝟶 ᴍɪɴᴜᴛᴇs, sᴏ ᴘʟᴇᴀsᴇ ғᴏʀᴡᴀʀᴅ ɪᴛ ᴛᴏ ʏᴏᴜʀ sᴀᴠᴇᴅ ᴍᴇssᴀɢᴇs. ⏳"
 
