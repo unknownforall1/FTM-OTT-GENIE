@@ -1,5 +1,6 @@
 import os
 from telegram import Update
+from telegram.ext import Updater, CommandHandler
 import yt_dlp
 
 # Replace with your channel username
@@ -65,27 +66,25 @@ def download_video(url, download_path='downloads/'):
         return None, 0, 0  # Return None and zeros if there's an error
 
 # Start command
-def start(update: Update, context: CallbackContext):
+def start(update: Update):
     if not is_user_member(update):
         update.message.reply_text(
-            f"Please join our channel {CHANNEL_USERNAME} to use this bot.",
-            parse_mode=ParseMode.MARKDOWN
+            f"Please join our channel {CHANNEL_USERNAME} to use this bot."
         )
         return
 
     update.message.reply_text("Send me a link to a free video from JioCinema, Hotstar, SonyLIV, or Zee5, and I'll download it for you!")
 
 # Download video command
-def download(update: Update, context: CallbackContext):
+def download(update: Update):
     if not is_user_member(update):
         update.message.reply_text(
-            f"Please join our channel {CHANNEL_USERNAME} to use this bot.",
-            parse_mode=ParseMode.MARKDOWN
+            f"Please join our channel {CHANNEL_USERNAME} to use this bot."
         )
         return
 
-    if context.args:  # Check if the user provided a URL
-        url = context.args[0]
+    if update.message.text:  # Check if the user provided a URL
+        url = update.message.text
         chat_id = update.message.chat_id
 
         # Check if the URL is valid for supported platforms
@@ -97,12 +96,11 @@ def download(update: Update, context: CallbackContext):
             if video_path:
                 try:
                     # Send the downloaded video back to the user
-                    context.bot.send_document(chat_id=chat_id, document=open(video_path, 'rb'))
+                    update.message.reply_document(document=open(video_path, 'rb'))
                     update.message.reply_text(
                         f'Here is your free video!\n\n'
                         f'📏 **Duration**: {video_duration // 60}m {video_duration % 60}s\n'
                         f'💾 **File Size**: {file_size / (1024 * 1024):.2f} MB',
-                        parse_mode=ParseMode.MARKDOWN
                     )
                 except Exception as e:
                     update.message.reply_text(f"Failed to send the video: {str(e)}")
@@ -118,7 +116,7 @@ def main():
     TOKEN = os.getenv('TELEGRAM_BOT_API_TOKEN')
 
     # Initialize the bot
-    updater = Updater(TOKEN, use_context=True)
+    updater = Updater(TOKEN)
     dp = updater.dispatcher
 
     # Register the command handlers
